@@ -43,6 +43,8 @@
 		3E99F1AD2BCBD67800C405BD /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E99F1AC2BCBD67800C405BD /* ImagePicker.swift */; };
 		3E99F1AF2BCC6A2200C405BD /* GridImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E99F1AE2BCC6A2200C405BD /* GridImageView.swift */; };
 		3EE0214A2BCD235300855270 /* FavoriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE021492BCD235300855270 /* FavoriteView.swift */; };
+		3EE0214F2BCD583400855270 /* SimpleToast in Frameworks */ = {isa = PBXBuildFile; productRef = 3EE0214E2BCD583400855270 /* SimpleToast */; };
+		3EE021512BCD5A7500855270 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE021502BCD5A7500855270 /* Toast.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +85,7 @@
 		3E99F1AC2BCBD67800C405BD /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		3E99F1AE2BCC6A2200C405BD /* GridImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridImageView.swift; sourceTree = "<group>"; };
 		3EE021492BCD235300855270 /* FavoriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteView.swift; sourceTree = "<group>"; };
+		3EE021502BCD5A7500855270 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +97,7 @@
 				3E99F17E2BCA96DF00C405BD /* FirebaseDatabase in Frameworks */,
 				3E99F1922BCA96DF00C405BD /* FirebasePerformance in Frameworks */,
 				3E99F1902BCA96DF00C405BD /* FirebaseMessaging in Frameworks */,
+				3EE0214F2BCD583400855270 /* SimpleToast in Frameworks */,
 				3E99F18E2BCA96DF00C405BD /* FirebaseInstallations in Frameworks */,
 				3E99F1762BCA96DF00C405BD /* FirebaseAppCheck in Frameworks */,
 				3E99F19A2BCA96DF00C405BD /* FirebaseStorageCombine-Community in Frameworks */,
@@ -165,6 +169,7 @@
 				3E99F1AC2BCBD67800C405BD /* ImagePicker.swift */,
 				3E99F1AE2BCC6A2200C405BD /* GridImageView.swift */,
 				3EE021492BCD235300855270 /* FavoriteView.swift */,
+				3EE021502BCD5A7500855270 /* Toast.swift */,
 			);
 			path = "photo-storage";
 			sourceTree = "<group>";
@@ -255,6 +260,7 @@
 				3E99F1952BCA96DF00C405BD /* FirebaseRemoteConfigSwift */,
 				3E99F1972BCA96DF00C405BD /* FirebaseStorage */,
 				3E99F1992BCA96DF00C405BD /* FirebaseStorageCombine-Community */,
+				3EE0214E2BCD583400855270 /* SimpleToast */,
 			);
 			productName = "photo-storage";
 			productReference = 3E99F1432BCA8AF800C405BD /* photo-storage.app */;
@@ -330,6 +336,7 @@
 			mainGroup = 3E99F13A2BCA8AF800C405BD;
 			packageReferences = (
 				3E99F1742BCA96DF00C405BD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				3EE0214D2BCD583400855270 /* XCRemoteSwiftPackageReference "SimpleToast" */,
 			);
 			productRefGroup = 3E99F1442BCA8AF800C405BD /* Products */;
 			projectDirPath = "";
@@ -375,6 +382,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3E99F19D2BCAA99300C405BD /* AuthenticationView.swift in Sources */,
+				3EE021512BCD5A7500855270 /* Toast.swift in Sources */,
 				3E99F1A82BCBA70000C405BD /* MainView.swift in Sources */,
 				3E99F1A12BCAB6D400C405BD /* AuthenticationManager.swift in Sources */,
 				3E99F1AD2BCBD67800C405BD /* ImagePicker.swift in Sources */,
@@ -550,6 +558,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"photo-storage/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "My app use photo library to save photo";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -578,6 +587,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"photo-storage/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "My app use photo library to save photo";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -718,6 +728,14 @@
 				minimumVersion = 10.24.0;
 			};
 		};
+		3EE0214D2BCD583400855270 /* XCRemoteSwiftPackageReference "SimpleToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sanzaru/SimpleToast.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -815,6 +833,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3E99F1742BCA96DF00C405BD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		3EE0214E2BCD583400855270 /* SimpleToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3EE0214D2BCD583400855270 /* XCRemoteSwiftPackageReference "SimpleToast" */;
+			productName = SimpleToast;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

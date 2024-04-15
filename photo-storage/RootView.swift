@@ -6,16 +6,22 @@
 //
 
 import SwiftUI
+import SimpleToast
 
 struct RootView: View {
     
     @State private var showSignInView: Bool = false
+    @State var showToast: ToastObject? = nil
     @StateObject private var imageViewModel = ImageResultViewModel()
     
+    private let toastOptions = SimpleToastOptions(
+        hideAfter: 5
+    )
+    
     var body: some View {
-        ZStack {
+        VStack {
             TabView {
-                MainView(imageView: imageViewModel)
+                MainView(imageView: imageViewModel, showToast: $showToast)
                     .tabItem {
                         Label("Home", systemImage: "house")
                     }
@@ -24,12 +30,28 @@ struct RootView: View {
                     .tabItem {
                         Label("Setting", systemImage: "gear")
                     }
-                FavoriteView(imageView: imageViewModel)
+                FavoriteView(imageView: imageViewModel, showToast: $showToast)
                     .tabItem {
                         Label("Favorite", systemImage: "heart.fill")
                     }
             }
+//            Button("Show toast") {
+//                        withAnimation {
+//                            // Toggle the item
+//                            showToast = showToast == nil ? DummyItem() : nil
+//                        }
+//                    }
         }
+        .simpleToast(item: $showToast, options: toastOptions) {
+                HStack {
+                    Image(systemName: showToast?.symbol ?? "")
+                    Text(showToast?.message ?? "")
+                }
+                .padding()
+                .background(showToast?.color ?? Color.white)
+                .foregroundColor(Color.white)
+                .cornerRadius(10)
+            }
         .onAppear {
             let user = try? AuthenticationManager.shared.getAuthenticatedUser()
             self.showSignInView = user == nil ? true : false
@@ -39,7 +61,6 @@ struct RootView: View {
                 AuthenticationView(showSignInView: $showSignInView)
             }
         })
-        
     }
 }
 

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GridImageView: View {
     @StateObject var imageView: ImageResultViewModel
+    @Binding var showToast: ToastObject?
     var imageResult: ImageResult
     var screenWidth: CGFloat
     var isMainPage: Bool
@@ -66,7 +67,9 @@ struct GridImageView: View {
                 guard let uiImage = uiImage else { return }
                 DispatchQueue.main.async {
                     UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
+                    showToast = ToastObject(message: "Download picture success", symbol: "square.and.arrow.down.on.square", color: Color.green.opacity(0.9))
                 }
+                
             }
             
         }

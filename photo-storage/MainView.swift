@@ -30,7 +30,18 @@ final class MainViewModel: ObservableObject {
             guard let fileName = result.itemProvider.suggestedName else {
                 continue
             }
+            var city = ""
+            var country = ""
             let identifier = result.assetIdentifier!
+            if let assetId = result.assetIdentifier {
+                let assetResults = PHAsset.fetchAssets(withLocalIdentifiers: [assetId], options: nil)
+                let location = assetResults.firstObject?.location
+                print("lat: \(location?.coordinate.latitude), lon: \(location?.coordinate.longitude)")
+                location?.fetchCityAndCountry { cityValue, countryValue, error in
+                    city = cityValue ?? ""
+                    country = countryValue ?? ""
+                }
+            }
             result.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
                 // Check for errors
                 if let error = error {
@@ -45,7 +56,7 @@ final class MainViewModel: ObservableObject {
                             guard let imageData = imageData else {
                                 return
                             }
-                            let imageResult = ImageManager.shared.uploadFile(imageData: imageData, fileName: fileName, uid: uid, identifier: identifier)
+                            let imageResult = ImageManager.shared.uploadFile(imageData: imageData, fileName: fileName, uid: uid, identifier: identifier, city: city, country: country)
                             print("Uploaded to firebase")
                             
                             guard let imageResult = imageResult else {
@@ -116,7 +127,9 @@ final class MainViewModel: ObservableObject {
 struct MainView: View {
     @StateObject var imageView: ImageResultViewModel
     @StateObject private var viewModel = MainViewModel()
+    @Binding var showToast: ToastObject?
     @State var showPicker = false
+    @State var searchText = ""
     
     func uploadPhotoAndUpadate(results: [PHPickerResult]) async throws {
         let result = viewModel.processSelectedImages(results: results)
@@ -125,6 +138,20 @@ struct MainView: View {
         try await Task.sleep(nanoseconds: UInt64(4 * Double(NSEC_PER_SEC)))
         let imageResultList = try await ImageManager.shared.getImageByUid(uid: uid)
         imageView.setImageResult(imageResultList: imageResultList)
+    }
+    
+    func getImageListWithFilter(imageListResult: [ImageResult]) -> [ImageResult] {
+        if searchText == "" {
+            return imageListResult
+        }
+        
+        var result: [ImageResult] = []
+        for image in imageListResult {
+            if image.city.contains(searchText)  || image.country.contains(searchText) {
+                result.append(image)
+            }
+        }
+        return result
     }
     
     var pickerConfig: PHPickerConfiguration {
@@ -138,59 +165,69 @@ struct MainView: View {
     }
     
     var body: some View {
-        GeometryReader { reader in
-            ZStack {
-                Color.white
-                VStack(alignment: .leading, spacing: 10, content: {
-                    let column = Array(repeating: GridItem(.flexible(), spacing: 15), count: 2)
-                    LazyVGrid(columns: column, alignment: .center, spacing: 10, content: {
-                        ForEach(imageView.ImageResultList,id: \.identifier){result in
-                            GridImageView(imageView: imageView, imageResult: result, screenWidth: (reader.size.width - 40)/2, isMainPage: true)
-                        }
-                    })
-                    Spacer()
-                })
-                VStack {
-                    Spacer()
-                    Button {
-                        showPicker.toggle()
-                    }label: {
-                        Image(systemName: "plus")
-                            .font(.title.weight(.semibold))
-                            .padding()
-                            .background(Color.pink)
-                            .foregroundColor(.white)
-                            .clipShape(Circle())
-                    }
-                    .sheet(isPresented: $showPicker, content: {
-                        PHPickerSwiftUI(config: pickerConfig) { selectedImages in
-                            Task {
-                                try await uploadPhotoAndUpadate(results: selectedImages)
+        NavigationStack {
+            GeometryReader { reader in
+                ZStack {
+                    Color.white
+                    VStack(alignment: .leading, spacing: 10, content: {
+                        let column = Array(repeating: GridItem(.flexible(), spacing: 15), count: 2)
+                        LazyVGrid(columns: column, alignment: .center, spacing: 10, content: {
+                            ForEach(getImageListWithFilter(imageListResult: imageView.ImageResultList),id: \.identifier){result in
+                                GridImageView(imageView: imageView, showToast: $showToast, imageResult: result, screenWidth: (reader.size.width - 40)/2, isMainPage: true)
                             }
-                        }
-                        .ignoresSafeArea()
+                        })
+                        Spacer()
                     })
+                    VStack {
+                        Spacer()
+                        Button {
+                            showPicker.toggle()
+                        }label: {
+                            Image(systemName: "plus")
+                                .font(.title.weight(.semibold))
+                                .padding()
+                                .background(Color.pink)
+                                .foregroundColor(.white)
+                                .clipShape(Circle())
+                        }
+                        .sheet(isPresented: $showPicker, content: {
+                            PHPickerSwiftUI(config: pickerConfig) { selectedImages in
+                                Task {
+                                    try await uploadPhotoAndUpadate(results: selectedImages)
+                                }
+                            }
+                            .ignoresSafeArea()
+                        })
+                    }
+                    
                 }
-                
-            }
-            .padding()
-            .onAppear {
-                Task {
-                    do {
-                        let uid = try AuthenticationManager.shared.getAuthenticatedUser().uid
-                        let imageResultList = try await ImageManager.shared.getImageByUid(uid: uid)
-                        imageView.setImageResult(imageResultList: imageResultList)
-                    } catch {
-                        print("Error: \(error)")
+                .padding()
+                .onAppear {
+                    Task {
+                        do {
+                            let uid = try AuthenticationManager.shared.getAuthenticatedUser().uid
+                            let imageResultList = try await ImageManager.shared.getImageByUid(uid: uid)
+                            imageView.setImageResult(imageResultList: imageResultList)
+                        } catch {
+                            print("Error: \(error)")
+                        }
                     }
                 }
             }
+            .listStyle(.plain)
+            .searchable(text: $searchText, prompt: "Search cities, countries")
         }
     }
         
     
 }
 
-#Preview {
-    MainView(imageView: ImageResultViewModel())
+extension CLLocation {
+    func fetchCityAndCountry(completion: @escaping (_ city: String?, _ country:  String?, _ error: Error?) -> ()) {
+        CLGeocoder().reverseGeocodeLocation(self) { completion($0?.first?.locality, $0?.first?.country, $1) }
+    }
 }
+
+//#Preview {
+//    MainView(imageView: ImageResultViewModel())
+//}

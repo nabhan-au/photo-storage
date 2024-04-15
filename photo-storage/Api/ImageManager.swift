@@ -52,14 +52,18 @@ struct ImageResult {
     var createdWhen: Double
     var isFavorite: Bool
     var identifier: String
+    var city: String
+    var country: String
     
-    init(uid: String, downloadURL: String, storageLocation: String, createdWhen: String, isFavorite: Bool, identifier: String) {
+    init(uid: String, downloadURL: String, storageLocation: String, createdWhen: String, isFavorite: Bool, identifier: String, city: String, country: String) {
         self.uid = uid
         self.downloadURL = downloadURL
         self.storageLocation = storageLocation
         self.createdWhen = Double(createdWhen) ?? 0
         self.isFavorite = isFavorite
         self.identifier = identifier
+        self.city = city
+        self.country = country
     }
 }
       
@@ -105,7 +109,9 @@ final class ImageManager {
             let createdWhen = imageInfo["createdWhen"] as? String ?? ""
             let isFavorite = imageInfo["isFavorite"] as? Bool ?? false
             let identifier = imageInfo["identifier"] as? String ?? ""
-            let imageObject = ImageResult(uid: uid, downloadURL: downloadURL, storageLocation: storageLocation, createdWhen: createdWhen, isFavorite: isFavorite, identifier: identifier)
+            let city = imageInfo["city"] as? String ?? ""
+            let country = imageInfo["country"] as? String ?? ""
+            let imageObject = ImageResult(uid: uid, downloadURL: downloadURL, storageLocation: storageLocation, createdWhen: createdWhen, isFavorite: isFavorite, identifier: identifier, city: city, country: country)
             if identifier != "" {
                 identifiers.append(identifier)
             }
@@ -132,7 +138,7 @@ final class ImageManager {
         })
     }
     
-    func uploadFile(imageData: Data, fileName: String, uid: String, identifier: String?) -> ImageResult? {
+    func uploadFile(imageData: Data, fileName: String, uid: String, identifier: String?, city: String, country: String) -> ImageResult? {
         let storageReference = Storage.storage().reference().child("Images").child("\(uid)-\(fileName).jpg")
         var result: ImageResult? = nil
         storageReference.putData(imageData, metadata: nil) { metadata, error in
@@ -154,9 +160,9 @@ final class ImageManager {
 
                     let urlStr:String = (url?.absoluteString) ?? ""
                     let createdWhen = String(NSDate().timeIntervalSince1970)
-                    let values = ["uid": uid, "downloadURL": urlStr, "storageLocation": storageLocation, "isFavorite": false, "createdWhen": createdWhen, "identifier": identifier ?? ""]
+                    let values = ["uid": uid, "downloadURL": urlStr, "storageLocation": storageLocation, "isFavorite": false, "createdWhen": createdWhen, "identifier": identifier ?? "", "city": city, "country": country]
                     self.addImageURLToDatabase(uid: uid, values: values as [String : AnyObject])
-                    result = ImageResult(uid: uid, downloadURL: urlStr, storageLocation: storageLocation, createdWhen: createdWhen, isFavorite: false, identifier: identifier ?? "")
+                    result = ImageResult(uid: uid, downloadURL: urlStr, storageLocation: storageLocation, createdWhen: createdWhen, isFavorite: false, identifier: identifier ?? "", city: city, country: country)
                 }
             }
         }
