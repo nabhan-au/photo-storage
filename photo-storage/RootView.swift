@@ -11,6 +11,7 @@ import SimpleToast
 struct RootView: View {
     
     @State private var showSignInView: Bool = false
+    @State private var showRegisterView: Bool = false
     @State var showToast: ToastObject? = nil
     @StateObject private var imageViewModel = ImageResultViewModel()
     
@@ -25,22 +26,15 @@ struct RootView: View {
                     .tabItem {
                         Label("Home", systemImage: "house")
                     }
-                
-                SettingView(showSignInView: $showSignInView)
-                    .tabItem {
-                        Label("Setting", systemImage: "gear")
-                    }
                 FavoriteView(imageView: imageViewModel, showToast: $showToast)
                     .tabItem {
                         Label("Favorite", systemImage: "heart.fill")
                     }
+                SettingView(showSignInView: $showSignInView)
+                    .tabItem {
+                        Label("Setting", systemImage: "gear")
+                    }
             }
-//            Button("Show toast") {
-//                        withAnimation {
-//                            // Toggle the item
-//                            showToast = showToast == nil ? DummyItem() : nil
-//                        }
-//                    }
         }
         .simpleToast(item: $showToast, options: toastOptions) {
                 HStack {
@@ -56,9 +50,14 @@ struct RootView: View {
             let user = try? AuthenticationManager.shared.getAuthenticatedUser()
             self.showSignInView = user == nil ? true : false
         }
+        .fullScreenCover(isPresented: $showRegisterView, content: {
+            NavigationStack {
+                RegisterView(showSignInView: $showSignInView, showRegisterView: $showRegisterView, mainPageshowToast: $showToast)
+            }
+        })
         .fullScreenCover(isPresented: $showSignInView, content: {
             NavigationStack {
-                AuthenticationView(showSignInView: $showSignInView)
+                SignInEmailView(showSignInView: $showSignInView, showRegisterView: $showRegisterView)
             }
         })
     }

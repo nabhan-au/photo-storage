@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E85F36A2BEF977400DF3D65 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E85F3692BEF977400DF3D65 /* RegisterView.swift */; };
 		3E99F1472BCA8AF800C405BD /* photo_storageApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E99F1462BCA8AF800C405BD /* photo_storageApp.swift */; };
 		3E99F14D2BCA8AFB00C405BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E99F14C2BCA8AFB00C405BD /* Assets.xcassets */; };
 		3E99F1502BCA8AFB00C405BD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E99F14F2BCA8AFB00C405BD /* Preview Assets.xcassets */; };
@@ -65,6 +66,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3E85F3692BEF977400DF3D65 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		3E99F1432BCA8AF800C405BD /* photo-storage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "photo-storage.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E99F1462BCA8AF800C405BD /* photo_storageApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = photo_storageApp.swift; sourceTree = "<group>"; };
 		3E99F14C2BCA8AFB00C405BD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 			children = (
 				3E99F19C2BCAA99300C405BD /* AuthenticationView.swift */,
 				3E99F19E2BCAAAA700C405BD /* SignInEmailView.swift */,
+				3E85F3692BEF977400DF3D65 /* RegisterView.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -383,6 +386,7 @@
 			files = (
 				3E99F19D2BCAA99300C405BD /* AuthenticationView.swift in Sources */,
 				3EE021512BCD5A7500855270 /* Toast.swift in Sources */,
+				3E85F36A2BEF977400DF3D65 /* RegisterView.swift in Sources */,
 				3E99F1A82BCBA70000C405BD /* MainView.swift in Sources */,
 				3E99F1A12BCAB6D400C405BD /* AuthenticationManager.swift in Sources */,
 				3E99F1AD2BCBD67800C405BD /* ImagePicker.swift in Sources */,

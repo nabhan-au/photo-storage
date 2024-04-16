@@ -1,15 +1,15 @@
 //
-//  SignInEmailView.swift
+//  RegisterView.swift
 //  photo-storage
 //
-//  Created by Nabhan Suwanachote on 13/4/2567 BE.
+//  Created by Nabhan Suwanachote on 11/5/2567 BE.
 //
 
 import SwiftUI
 import SimpleToast
 
 @MainActor
-final class SignInEmailViewModel: ObservableObject {
+final class RegisterViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     
@@ -30,20 +30,19 @@ final class SignInEmailViewModel: ObservableObject {
     }
 }
 
-struct SignInEmailView: View {
+struct RegisterView: View {
     
-    @StateObject private var viewModel = SignInEmailViewModel()
+    @StateObject private var viewModel = RegisterViewModel()
     @State var showToast: ToastObject? = nil
     @Binding var showSignInView: Bool
     @Binding var showRegisterView: Bool
+    @Binding var mainPageshowToast: ToastObject?
     private let toastOptions = SimpleToastOptions(
         hideAfter: 5
     )
     
-    
     var body: some View {
         VStack {
-            Spacer()
             TextField("Email", text: $viewModel.email)
                 .padding()
                 .background(Color.gray.opacity(0.4))
@@ -56,31 +55,18 @@ struct SignInEmailView: View {
             Button {
                 Task {
                     do {
-                        try await viewModel.signIn()
+                        try await viewModel.signUp()
                         showSignInView = false
+                        showRegisterView = false
+                        mainPageshowToast = ToastObject(message: "Register success", symbol: "square.and.arrow.down.on.square", color: Color.green.opacity(0.9))
                         return
                     } catch {
-                        showToast = ToastObject(message: "Login failed, email or password is not correct", symbol: "square.and.arrow.down.on.square", color: Color.red.opacity(0.9))
+                        showToast = ToastObject(message: "Register failed", symbol: "square.and.arrow.down.on.square", color: Color.red.opacity(0.9))
                         print("Error: \(error)")
                     }
-                    
                     do {
                         let user = try? AuthenticationManager.shared.getAuthenticatedUser()
                     }
-                }
-                
-            } label: {
-                Text("Sign In")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(height: 55)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(10)
-            }
-            Button {
-                Task {
-                    showRegisterView = true
                 }
                 
             } label: {
@@ -92,10 +78,24 @@ struct SignInEmailView: View {
                     .background(Color.blue)
                     .cornerRadius(10)
             }
+            Button {
+                Task {
+                    showRegisterView = false
+                }
+                
+            } label: {
+                Text("Back")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(height: 55)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .cornerRadius(10)
+            }
             Spacer()
         }
         .padding()
-        .navigationTitle("Sign In With Email")
+        .navigationTitle("Register with email")
         .simpleToast(item: $showToast, options: toastOptions) {
                 HStack {
                     Image(systemName: showToast?.symbol ?? "")
