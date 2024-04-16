@@ -25,14 +25,13 @@ struct RootView: View {
                     .tabItem {
                         Label("Home", systemImage: "house")
                     }
-                
-                SettingView(showSignInView: $showSignInView)
-                    .tabItem {
-                        Label("Setting", systemImage: "gear")
-                    }
                 FavoriteView(imageView: imageViewModel, showToast: $showToast)
                     .tabItem {
                         Label("Favorite", systemImage: "heart.fill")
+                    }
+                SettingView(showSignInView: $showSignInView)
+                    .tabItem {
+                        Label("Setting", systemImage: "gear")
                     }
             }
 //            Button("Show toast") {

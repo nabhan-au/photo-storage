@@ -169,15 +169,17 @@ struct MainView: View {
             GeometryReader { reader in
                 ZStack {
                     Color.white
-                    VStack(alignment: .leading, spacing: 10, content: {
-                        let column = Array(repeating: GridItem(.flexible(), spacing: 15), count: 2)
-                        LazyVGrid(columns: column, alignment: .center, spacing: 10, content: {
-                            ForEach(getImageListWithFilter(imageListResult: imageView.ImageResultList),id: \.identifier){result in
-                                GridImageView(imageView: imageView, showToast: $showToast, imageResult: result, screenWidth: (reader.size.width - 40)/2, isMainPage: true)
-                            }
+                    ScrollView (.vertical, showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 10, content: {
+                            let column = Array(repeating: GridItem(.flexible(), spacing: 15), count: 2)
+                            LazyVGrid(columns: column, alignment: .center, spacing: 10, content: {
+                                ForEach(getImageListWithFilter(imageListResult: imageView.ImageResultList),id: \.identifier){result in
+                                    GridImageView(imageView: imageView, showToast: $showToast, imageResult: result, screenWidth: (reader.size.width - 40)/2, isMainPage: true)
+                                }
+                            })
+                            Spacer()
                         })
-                        Spacer()
-                    })
+                    }
                     VStack {
                         Spacer()
                         Button {
