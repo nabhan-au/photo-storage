@@ -130,14 +130,27 @@ struct MainView: View {
     @Binding var showToast: ToastObject?
     @State var showPicker = false
     @State var searchText = ""
+    @State private var isUploading = false
+    @State private var uploadProgress: Float = 0.0
     
     func uploadPhotoAndUpadate(results: [PHPickerResult]) async throws {
-        let result = viewModel.processSelectedImages(results: results)
-        let uid = try AuthenticationManager.shared.getAuthenticatedUser().uid
-        imageView.concat(imageResult: result)
+        isUploading = true
+        uploadProgress = 0.0  // Reset progress at start
+        let increment = 1.0 / Float(results.count)
+        
+        for result in results {
+            let processResult = viewModel.processSelectedImages(results: [result])
+            imageView.concat(imageResult: processResult)
+            uploadProgress += increment
+            try await Task.sleep(nanoseconds: UInt64(0.5 * Double(NSEC_PER_SEC)))
+        }
         try await Task.sleep(nanoseconds: UInt64(4 * Double(NSEC_PER_SEC)))
+        let uid = try AuthenticationManager.shared.getAuthenticatedUser().uid
         let imageResultList = try await ImageManager.shared.getImageByUid(uid: uid)
         imageView.setImageResult(imageResultList: imageResultList)
+        
+        isUploading = false
+        uploadProgress = 1.0
     }
     
     func getImageListWithFilter(imageListResult: [ImageResult]) -> [ImageResult] {
@@ -181,6 +194,25 @@ struct MainView: View {
                         })
                     }
                     VStack {
+                        if isUploading {
+                            ZStack {
+                                Color.white  // Set background to white
+                                        .cornerRadius(10)  // Rounded corners for aesthetic
+                                        .frame(height: 60)  // Fixed height for the ZStack
+                                        .shadow(color: .gray, radius: 3, x: 0, y: 2)  // Apply a shadow beneath the bar  // Optional rounded corners for aesthetic
+                                VStack {
+                                    Text("Uploading image")
+                                                .foregroundColor(.black)  // Text color changed to black for contrast on white background
+                                                .padding(.top, 4)  // Vertical padding to ensure text is not too close to the edges
+                                                .padding(.horizontal)  // Horizontal padding for the text
+                                            ProgressView(value: uploadProgress, total: 1.0)
+                                                .progressViewStyle(LinearProgressViewStyle(tint: .gray))  // Tint color can be adjusted
+                                                .scaleEffect(x: 1, y: 2, anchor: .center)  // Scale Progress bar for a thicker look
+                                                .padding(.horizontal)  // Horizontal padding around the progress bar
+                                                .padding(.bottom, 4)
+                                }
+                            }.frame(maxWidth: .infinity, maxHeight: 60)
+                        }
                         Spacer()
                         Button {
                             showPicker.toggle()
@@ -220,8 +252,6 @@ struct MainView: View {
             .searchable(text: $searchText, prompt: "Search cities, countries")
         }
     }
-        
-    
 }
 
 extension CLLocation {
