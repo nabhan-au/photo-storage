@@ -43,15 +43,20 @@ struct RegisterView: View {
     
     var body: some View {
         VStack {
-            TextField("Email", text: $viewModel.email)
+            // Email input
+            TextField("Enter your email", text: $viewModel.email)
                 .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
-            
-            SecureField("Password", text: $viewModel.password)
+                .background(Color.secondary.opacity(0.1)) // Subtly styled input field
+                .cornerRadius(20)
+                .shadow(radius: 10, y: 5)
+
+            // Password input
+            SecureField("Enter your password", text: $viewModel.password)
                 .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
+                .background(Color.secondary.opacity(0.1)) // Consistency in input styling
+                .cornerRadius(20)
+                .shadow(radius: 10, y: 5)
+
             Button {
                 Task {
                     do {
@@ -72,11 +77,13 @@ struct RegisterView: View {
             } label: {
                 Text("Register")
                     .font(.headline)
+                    .fontWeight(.semibold)
                     .foregroundColor(.white)
-                    .frame(height: 55)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(10)
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .padding()
+                    .background(LinearGradient(gradient: Gradient(colors: [Color.pink]), startPoint: .leading, endPoint: .trailing))
+                    .cornerRadius(25)
+                    .shadow(radius: 5)
             }
             Button {
                 Task {
@@ -86,16 +93,18 @@ struct RegisterView: View {
             } label: {
                 Text("Back")
                     .font(.headline)
+                    .fontWeight(.semibold)
                     .foregroundColor(.white)
-                    .frame(height: 55)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(10)
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .padding()
+                    .background(LinearGradient(gradient: Gradient(colors: [Color.gray]), startPoint: .leading, endPoint: .trailing))
+                    .cornerRadius(25)
+                    .shadow(radius: 5)
             }
             Spacer()
         }
         .padding()
-        .navigationTitle("Register with email")
+        .navigationTitle("Register")
         .simpleToast(item: $showToast, options: toastOptions) {
                 HStack {
                     Image(systemName: showToast?.symbol ?? "")
