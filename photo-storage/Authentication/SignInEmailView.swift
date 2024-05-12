@@ -42,60 +42,87 @@ struct SignInEmailView: View {
     
     
     var body: some View {
-        VStack {
-            Spacer()
-            TextField("Email", text: $viewModel.email)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
-            
-            SecureField("Password", text: $viewModel.password)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
-            Button {
-                Task {
-                    do {
-                        try await viewModel.signIn()
-                        showSignInView = false
-                        return
-                    } catch {
-                        showToast = ToastObject(message: "Login failed, email or password is not correct", symbol: "square.and.arrow.down.on.square", color: Color.red.opacity(0.9))
-                        print("Error: \(error)")
+        ZStack {
+                Color(UIColor.systemBackground) // Base background for adaptability in light/dark mode
+                    .edgesIgnoringSafeArea(.all)
+                
+                VStack(spacing: 20) { // Adjusted overall spacing for a more airy layout
+                    Spacer()
+                    
+                    // Logo or Picture icon with label, centered
+                    VStack {
+                        Image(systemName: "photo.on.rectangle") // Using an iconic Airbnb-like symbol
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80, height: 80)
+                            .foregroundColor(Color.pink) // Airbnb's brand color
+
+                        Text("Pic Storage")
+                            .font(.largeTitle) // More prominent title in the style of Airbnb
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.pink)
+                    }
+                    .padding()
+                    .background(Color.clear)
+
+                    // Email input
+                    TextField("Enter your email", text: $viewModel.email)
+                        .padding()
+                        .background(Color.secondary.opacity(0.1)) // Subtly styled input field
+                        .cornerRadius(20)
+                        .shadow(radius: 10, y: 5)
+
+                    // Password input
+                    SecureField("Enter your password", text: $viewModel.password)
+                        .padding()
+                        .background(Color.secondary.opacity(0.1)) // Consistency in input styling
+                        .cornerRadius(20)
+                        .shadow(radius: 10, y: 5)
+
+                    // Sign In button
+                    Button(action: {
+                        Task {
+                            do {
+                                try await viewModel.signIn()
+                                showSignInView = false
+                            } catch {
+                                showToast = ToastObject(message: "Login failed, email or password is not correct", symbol: "exclamationmark.triangle", color: Color.red.opacity(0.8))
+                                print("Error: \(error)")
+                            }
+                        }
+                    }) {
+                        Text("Sign In")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(minWidth: 0, maxWidth: .infinity)
+                            .padding()
+                            .background(LinearGradient(gradient: Gradient(colors: [Color.pink]), startPoint: .leading, endPoint: .trailing))
+                            .cornerRadius(25)
+                            .shadow(radius: 5)
+                    }
+
+                    // Register button
+                    Button(action: {
+                        Task {
+                            showRegisterView = true
+                        }
+                    }) {
+                        Text("Register")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(minWidth: 0, maxWidth: .infinity)
+                            .padding()
+                            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.5), Color.blue.opacity(0.7)]), startPoint: .leading, endPoint: .trailing))
+                            .cornerRadius(25)
+                            .shadow(radius: 5)
                     }
                     
-                    do {
-                        let user = try? AuthenticationManager.shared.getAuthenticatedUser()
-                    }
+                    Spacer()
                 }
-                
-            } label: {
-                Text("Sign In")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(height: 55)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(10)
+                .padding(EdgeInsets(top: 0, leading: 30, bottom: 20, trailing: 30)) // Increased padding for better focus
             }
-            Button {
-                Task {
-                    showRegisterView = true
-                }
-                
-            } label: {
-                Text("Register")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(height: 55)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(10)
-            }
-            Spacer()
-        }
-        .padding()
-        .navigationTitle("Sign In With Email")
         .simpleToast(item: $showToast, options: toastOptions) {
                 HStack {
                     Image(systemName: showToast?.symbol ?? "")

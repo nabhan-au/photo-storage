@@ -138,6 +138,20 @@ final class ImageManager {
         })
     }
     
+    func getNotExistImageIdentifier(identifer: [String], uid: String) async throws -> [String] {
+        var existIdentifier: [String] = []
+        let querySnapshot = try await database.collection("ImageData").whereField("uid", isEqualTo: uid).whereField("identifier", in: identifer).getDocuments()
+        for document in querySnapshot.documents {
+            let imageInfo = document.data()
+            let currentIdentifier = imageInfo["identifier"] as? String ?? ""
+            if currentIdentifier != "" {
+                existIdentifier.append(currentIdentifier)
+            }
+        }
+        let result = identifer.filter { !existIdentifier.contains($0) }
+        return result
+    }
+    
     func uploadFile(imageData: Data, fileName: String, uid: String, identifier: String?, city: String, country: String) -> ImageResult? {
         let storageReference = Storage.storage().reference().child("Images").child("\(uid)-\(fileName).jpg")
         var result: ImageResult? = nil

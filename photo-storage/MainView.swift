@@ -24,6 +24,22 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func getNotExistImage(results: [PHPickerResult], uid: String) async throws -> [PHPickerResult] {
+        let identifiers = results.map {
+            $0.assetIdentifier ?? ""
+        }.filter {
+            $0 != ""
+        }
+        let notExistImageIdentifier = try await ImageManager.shared.getNotExistImageIdentifier(identifer: identifiers, uid: uid)
+        return results.filter {
+            let iden = $0.assetIdentifier ?? ""
+            if notExistImageIdentifier.contains(iden) {
+                return true
+            }
+            return false
+        }
+    }
+    
     func processSelectedImages(results: [PHPickerResult]) -> [ImageResult] {
         var imageResultList: [ImageResult] = []
         for result in results {
@@ -75,52 +91,6 @@ final class MainViewModel: ObservableObject {
         }
         return imageResultList
     }
-    
-//    func processSelectedImages(results: [PHPickerResult]) -> [ImageResult] {
-//        var imageResultList: [ImageResult] = []
-//        let dispatchGroup = DispatchGroup()
-//        let resultQueue = DispatchQueue(label: "imageResultListQueue", attributes: .concurrent)
-//        
-//        for result in results {
-//            guard let fileName = result.itemProvider.suggestedName else {
-//                continue
-//            }
-//            dispatchGroup.enter()
-//            result.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
-//                // Check for errors
-//                if let error = error {
-//                    print("Sick error dawg \(error.localizedDescription)")
-//                } else {
-//                    // Convert the image into Data so we can upload to firebase
-//                    if let image = object as? UIImage, let imageData = image.jpegData(compressionQuality: 1.0) {
-//                        do {
-//                            let uid = try AuthenticationManager.shared.getAuthenticatedUser().uid
-//                            let imageResult = ImageManager.shared.uploadFile(imageData: imageData, fileName: fileName, uid: uid)
-//                            print("Uploaded to firebase")
-//                            
-//                            guard let imageResult = imageResult else {
-//                                print("Error: unable to get image result object")
-//                                dispatchGroup.leave()
-//                                return
-//                            }
-//                            resultQueue.async(flags: .barrier) {
-//                                imageResultList.append(imageResult)
-//                            }
-//                        } catch {
-//                            print("Error: Unable to upload image")
-//                        }
-//                    } else {
-//                        print("There was an error.")
-//                    }
-//                }
-//                dispatchGroup.leave()
-//            }
-//        }
-//        
-//        dispatchGroup.wait()
-//        return imageResultList
-//    }
-//
 }
 
 
@@ -134,18 +104,22 @@ struct MainView: View {
     @State private var uploadProgress: Float = 0.0
     
     func uploadPhotoAndUpadate(results: [PHPickerResult]) async throws {
+        let uid = try AuthenticationManager.shared.getAuthenticatedUser().uid
+        let uniqueResult = try await viewModel.getNotExistImage(results: results, uid: uid)
+        if uniqueResult.count == 0 {
+            return
+        }
         isUploading = true
         uploadProgress = 0.0  // Reset progress at start
-        let increment = 1.0 / Float(results.count)
+        let increment = 1.0 / Float(uniqueResult.count)
         
-        for result in results {
+        for result in uniqueResult {
             let processResult = viewModel.processSelectedImages(results: [result])
             imageView.concat(imageResult: processResult)
             uploadProgress += increment
             try await Task.sleep(nanoseconds: UInt64(0.5 * Double(NSEC_PER_SEC)))
         }
         try await Task.sleep(nanoseconds: UInt64(4 * Double(NSEC_PER_SEC)))
-        let uid = try AuthenticationManager.shared.getAuthenticatedUser().uid
         let imageResultList = try await ImageManager.shared.getImageByUid(uid: uid)
         imageView.setImageResult(imageResultList: imageResultList)
         
