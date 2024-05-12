@@ -63,10 +63,10 @@ struct RegisterView: View {
                         try await viewModel.signUp()
                         showSignInView = false
                         showRegisterView = false
-                        mainPageshowToast = ToastObject(message: "Register success", symbol: "square.and.arrow.down.on.square", color: Color.green.opacity(0.9))
+                        mainPageshowToast = ToastObject(message: "Register success", symbol: "checkmark.circle.fill", color: Color.green.opacity(0.9))
                         return
                     } catch {
-                        showToast = ToastObject(message: "Register failed", symbol: "square.and.arrow.down.on.square", color: Color.red.opacity(0.9))
+                        showToast = ToastObject(message: "Register failed", symbol: "exclamationmark.triangle", color: Color.red.opacity(0.9))
                         print("Error: \(error)")
                     }
                     do {
